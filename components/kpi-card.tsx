@@ -120,8 +120,8 @@ export function KPICard({ data, size = 'standard', onClick }: KPICardProps) {
                   data.status === 'green' ? 'bg-green-400' : 'bg-red-400'
                 )}
                 style={{
-                  height: `${(value / Math.max(...data.sparklineData)) * 100}%`,
-                  opacity: 0.6 + (i / data.sparklineData.length) * 0.4
+                  height: `${(value / Math.max(...(data.sparklineData || []))) * 100}%`,
+                  opacity: 0.6 + (i / (data.sparklineData?.length || 1)) * 0.4
                 }}
               />
             ))}
