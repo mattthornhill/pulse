@@ -8,32 +8,44 @@ interface CalendarHeatmapProps {
   timeFilter: 'weekly' | 'monthly' | 'annual'
 }
 
-// Mock data - in production, this would come from your database
-// Each key is a date string (YYYY-MM-DD), value is the percentage of KPIs hit
-const mockPerformanceData: Record<string, number> = {
-  '2024-06-01': 100,
-  '2024-06-02': 85,
-  '2024-06-03': 70,
-  '2024-06-04': 60,
-  '2024-06-05': 45,
-  '2024-06-06': 0,
-  '2024-06-07': 90,
-  '2024-06-08': 100,
-  '2024-06-09': 75,
-  '2024-06-10': 80,
-  '2024-06-11': 65,
-  '2024-06-12': 100,
-  '2024-06-13': 95,
-  '2024-06-14': 70,
-  '2024-06-15': 85,
-  '2024-06-16': 60,
-  '2024-06-17': 100,
-  '2024-06-18': 90,
-  '2024-06-19': 75,
-  '2024-06-20': 100,
-  '2024-06-21': 85,
-  '2024-06-22': 95,
+// Generate random performance data for demonstration
+// In production, this would come from your database
+const generateMockData = (): Record<string, number> => {
+  const data: Record<string, number> = {}
+  const today = new Date()
+  
+  // Generate data for the past 365 days
+  for (let i = 0; i < 365; i++) {
+    const date = new Date(today)
+    date.setDate(date.getDate() - i)
+    const dateKey = date.toISOString().split('T')[0]
+    
+    // Generate weighted random percentages
+    // Make it more likely to have good performance
+    const rand = Math.random()
+    let percentage: number
+    
+    if (rand < 0.3) {
+      // 30% chance of 100%
+      percentage = 100
+    } else if (rand < 0.5) {
+      // 20% chance of 70-99%
+      percentage = Math.floor(Math.random() * 30) + 70
+    } else if (rand < 0.7) {
+      // 20% chance of 60-69%
+      percentage = Math.floor(Math.random() * 10) + 60
+    } else {
+      // 30% chance of 0-59%
+      percentage = Math.floor(Math.random() * 60)
+    }
+    
+    data[dateKey] = percentage
+  }
+  
+  return data
 }
+
+const mockPerformanceData = generateMockData()
 
 export function CalendarHeatmap({ timeFilter }: CalendarHeatmapProps) {
   const [currentDate, setCurrentDate] = useState(new Date())
@@ -142,15 +154,20 @@ export function CalendarHeatmap({ timeFilter }: CalendarHeatmapProps) {
                 className={cn(
                   "aspect-square rounded-lg flex items-center justify-center text-sm font-medium transition-all cursor-pointer group relative",
                   hasData ? getColorForPercentage(performance) : "bg-gray-100 dark:bg-slate-700",
-                  hasData ? "text-white hover:opacity-80" : "text-gray-600 dark:text-gray-400",
+                  hasData ? "text-white" : "text-gray-600 dark:text-gray-400",
                   isToday && "ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-slate-800"
                 )}
-                title={hasData ? `${performance}% KPIs achieved` : 'No data'}
               >
-                <span className="relative z-10">{day}</span>
+                <span className="relative z-10 group-hover:opacity-0 transition-opacity">{day}</span>
                 {hasData && (
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 rounded-lg">
-                    <span className="text-white text-xs font-bold">{performance}%</span>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="text-white text-lg font-bold">{performance}%</span>
+                    <span className="text-white text-[10px]">KPIs hit</span>
+                  </div>
+                )}
+                {!hasData && (
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="text-gray-500 dark:text-gray-400 text-xs">No data</span>
                   </div>
                 )}
               </div>
