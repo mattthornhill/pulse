@@ -1,6 +1,6 @@
 'use client'
 
-import { TrendingUp, TrendingDown, Minus } from 'lucide-react'
+import { TrendingUp, TrendingDown, Minus, BarChart3 } from 'lucide-react'
 import { KPIData } from '@/types/dashboard'
 import { cn } from '@/lib/utils'
 
@@ -72,6 +72,10 @@ export function KPICard({ data, size = 'standard', onClick }: KPICardProps) {
       )}
       onClick={onClick}
     >
+      {/* Chart Icon */}
+      <div className="absolute top-4 right-4">
+        <BarChart3 className="h-5 w-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors" />
+      </div>
       
       {/* KPI Name */}
       <div className="mb-4">
