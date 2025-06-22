@@ -9,6 +9,7 @@ import { FileText } from 'lucide-react'
 import { TimeFilter as TimeFilterType, KPIData, DashboardSummary as DashboardSummaryType } from '@/types/dashboard'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { MetabaseModal } from '@/components/metabase-modal'
+import { cn } from '@/lib/utils'
 
 // Mock data - in production, this would come from Supabase
 const mockKPIData: KPIData[] = [
@@ -203,13 +204,20 @@ export default function DashboardPage() {
       
       {/* KPI Scorecard Grid */}
       <div className="px-[3%] py-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {kpiData.map((kpi) => (
-            <KPICard 
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {kpiData.map((kpi, index) => (
+            <div 
               key={kpi.id} 
-              data={kpi} 
-              onClick={() => handleKPIClick(kpi.id)}
-            />
+              className={cn(
+                index < 2 ? "md:col-span-2" : ""
+              )}
+            >
+              <KPICard 
+                data={kpi} 
+                size={index < 2 ? "large" : "standard"}
+                onClick={() => handleKPIClick(kpi.id)}
+              />
+            </div>
           ))}
         </div>
       </div>
