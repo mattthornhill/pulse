@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { FileText } from 'lucide-react'
 import { TimeFilter as TimeFilterType, KPIData, DashboardSummary as DashboardSummaryType } from '@/types/dashboard'
 import { ThemeToggle } from '@/components/theme-toggle'
-import { MetabaseEmbed } from '@/components/metabase-embed'
+import { MetabaseModal } from '@/components/metabase-modal'
 
 // Mock data - in production, this would come from Supabase
 const mockKPIData: KPIData[] = [
@@ -130,6 +130,8 @@ export default function DashboardPage() {
   const [timeFilter, setTimeFilter] = useState<TimeFilterType>('daily')
   const [kpiData, setKpiData] = useState<KPIData[]>(mockKPIData)
   const [lastRefresh, setLastRefresh] = useState(new Date())
+  const [modalOpen, setModalOpen] = useState(false)
+  const [selectedKPI, setSelectedKPI] = useState<KPIData | null>(null)
   
   const summary: DashboardSummaryType = {
     greenCount: kpiData.filter(kpi => kpi.status === 'green').length,
@@ -154,8 +156,11 @@ export default function DashboardPage() {
   }
   
   const handleKPIClick = (kpiId: string) => {
-    // Open Metabase modal/detail view
-    console.log('Opening details for:', kpiId)
+    const kpi = kpiData.find(k => k.id === kpiId)
+    if (kpi) {
+      setSelectedKPI(kpi)
+      setModalOpen(true)
+    }
   }
   
   // Auto-refresh every 15 minutes
@@ -169,40 +174,44 @@ export default function DashboardPage() {
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-slate-950 dark:via-gray-900 dark:to-slate-950">
-      {/* Fixed height container for dashboard */}
-      <div className="h-screen flex flex-col">
-        {/* Header */}
-        <div className="bg-white dark:bg-gradient-to-r dark:from-slate-900 dark:to-slate-800 shadow-sm dark:shadow-lg border-b border-gray-200 dark:border-transparent relative z-50 flex-shrink-0">
-          <div className="px-[3%] py-4 md:py-6">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div>
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">Profit Pulse AI</h1>
-                <p className="text-gray-600 dark:text-slate-400 text-xs md:text-sm mt-1">Leadership Performance Intelligence</p>
+      {/* Header */}
+      <div className="bg-white dark:bg-gradient-to-r dark:from-slate-900 dark:to-slate-800 shadow-sm dark:shadow-lg border-b border-gray-200 dark:border-transparent relative z-50">
+        <div className="px-[3%] py-4 md:py-6">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">Profit Pulse AI</h1>
+              <p className="text-gray-600 dark:text-slate-400 text-xs md:text-sm mt-1">Leadership Performance Intelligence</p>
+            </div>
+            <div className="flex items-center gap-2 md:gap-4 relative z-50">
+              <div className="bg-gray-50 dark:bg-white/10 backdrop-blur-sm rounded-xl p-1 flex-1 md:flex-initial">
+                <TimeFilter value={timeFilter} onChange={setTimeFilter} />
               </div>
-              <div className="flex items-center gap-2 md:gap-4 relative z-50">
-                <div className="bg-gray-50 dark:bg-white/10 backdrop-blur-sm rounded-xl p-1 flex-1 md:flex-initial">
-                  <TimeFilter value={timeFilter} onChange={setTimeFilter} />
-                </div>
-                <ThemeToggle />
-              </div>
+              <ThemeToggle />
             </div>
           </div>
         </div>
-        
-        {/* Summary Bar */}
-        <div className="px-[3%] pt-2 md:pt-4 pb-2 flex-shrink-0">
-          <DashboardSummary 
-            summary={summary} 
-            lastRefresh={lastRefresh} 
-            onRefresh={handleRefresh} 
-          />
-        </div>
-        
-        {/* Dashboard Container - Always fills remaining viewport */}
-        <div className="px-[3%] py-2 md:py-4 flex-1 overflow-hidden">
-          <MetabaseEmbed 
-            className="w-full h-full"
-          />
+      </div>
+      
+      {/* Summary Bar */}
+      <div className="px-[3%] pt-2 md:pt-4 pb-2">
+        <DashboardSummary 
+          summary={summary} 
+          lastRefresh={lastRefresh} 
+          onRefresh={handleRefresh} 
+        />
+      </div>
+      
+      {/* KPI Scorecard Grid */}
+      <div className="px-[3%] py-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {kpiData.map((kpi) => (
+            <KPICard 
+              key={kpi.id} 
+              data={kpi} 
+              onClick={() => handleKPIClick(kpi.id)}
+              isLarge={kpi.id === 'total_revenue' || kpi.id === 'gross_profit_margin'}
+            />
+          ))}
         </div>
       </div>
       
@@ -245,6 +254,19 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
+      )}
+      
+      {/* Metabase Modal */}
+      {selectedKPI && (
+        <MetabaseModal
+          isOpen={modalOpen}
+          onClose={() => {
+            setModalOpen(false)
+            setSelectedKPI(null)
+          }}
+          kpiId={selectedKPI.id}
+          kpiName={selectedKPI.name}
+        />
       )}
     </div>
   )
