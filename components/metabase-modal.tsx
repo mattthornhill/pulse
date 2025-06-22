@@ -36,22 +36,22 @@ export function MetabaseModal({ isOpen, onClose, kpiId, kpiName }: MetabaseModal
   
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-7xl w-[95vw] h-[90vh] p-4">
+      <DialogContent className="max-w-6xl w-[90vw] h-auto max-h-[85vh] p-4">
         <DialogHeader className="pb-2">
-          <DialogTitle className="text-xl font-bold">{kpiName}</DialogTitle>
+          <DialogTitle className="text-lg font-bold">{kpiName}</DialogTitle>
         </DialogHeader>
-        <div className="flex-1 relative overflow-hidden" style={{ height: 'calc(100% - 40px)' }}>
+        <div className="relative overflow-hidden rounded-lg" style={{ height: '65vh' }}>
           <iframe
             src={embedUrl}
             frameBorder="0"
             allowTransparency
-            className="absolute w-full rounded-lg"
+            className="absolute w-full"
             style={{ 
               background: 'transparent',
-              top: '-60px',
+              top: '-50px',
               left: '0',
               right: '0',
-              height: 'calc(100% + 60px)'
+              height: 'calc(100% + 100px)'
             }}
           />
         </div>
