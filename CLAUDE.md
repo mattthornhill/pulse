@@ -11,7 +11,7 @@ A leadership-ready performance intelligence dashboard for field service business
 - **Frontend**: Next.js 14 with TypeScript and App Router
 - **Styling**: Shadcn/ui (Radix UI + Tailwind CSS)
 - **Database**: Supabase (PostgreSQL)
-- **Data Visualization**: Metabase embedded dashboards
+- **Data Visualization**: KPI cards with Metabase modal views
 - **State Management**: React hooks and context
 
 ## Common Commands
@@ -41,7 +41,7 @@ npm run lint         # Run ESLint
 │   ├── kpi-card.tsx      # KPI card component
 │   ├── dashboard-summary.tsx
 │   ├── time-filter.tsx
-│   └── metabase-embed.tsx
+│   └── metabase-modal.tsx  # Modal for Metabase visualizations
 ├── lib/                   # Utilities and configs
 │   ├── utils.ts          # Shadcn utilities
 │   └── supabase.ts       # Supabase client
@@ -67,9 +67,7 @@ Create a `.env.local` file with:
 ```
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-NEXT_PUBLIC_METABASE_URL=your_metabase_url
 NEXT_PUBLIC_METABASE_SITE_URL=your_metabase_site_url
-NEXT_PUBLIC_METABASE_SECRET_KEY=your_metabase_jwt_secret
 ```
 
 ## Database Schema
@@ -98,16 +96,28 @@ The Supabase database includes tables for:
 - Project setup with Next.js and TypeScript
 - Shadcn UI integration
 - Dashboard layout and responsive grid
-- KPI card components
+- KPI card components with click-to-detail functionality
 - Time filter and summary bar
 - Database schema design
+- Basic Metabase modal integration
 
 🚧 In Progress:
-- Metabase integration
+- Metabase question creation and ID mapping
 - Admin configuration panel
 - PDF export functionality
 - Demo data generation
 - Calendar heatmap visualization
+
+## Metabase Integration
+
+- KPI cards display on the main dashboard with mock data
+- Clicking any KPI card opens a modal with the corresponding Metabase visualization
+- Each KPI needs a public Metabase question created and mapped in `components/metabase-modal.tsx`
+- To add/update Metabase questions:
+  1. Create the question in Metabase
+  2. Enable public sharing for the question
+  3. Get the question ID from the URL
+  4. Update the `metabaseQuestionMap` in `components/metabase-modal.tsx`
 
 ## Important Notes
 
