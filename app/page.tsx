@@ -9,6 +9,7 @@ import { FileText } from 'lucide-react'
 import { TimeFilter as TimeFilterType, KPIData, DashboardSummary as DashboardSummaryType } from '@/types/dashboard'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { MetabaseModal } from '@/components/metabase-modal'
+import { CalendarHeatmap } from '@/components/calendar-heatmap'
 import { cn } from '@/lib/utils'
 
 // Mock data - in production, this would come from Supabase
@@ -249,16 +250,7 @@ export default function DashboardPage() {
           </div>
           
           <div className="mt-8">
-            <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 border border-gray-200 dark:border-slate-700">
-              <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6">Performance Calendar</h3>
-              <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800 rounded-xl h-64 flex items-center justify-center text-slate-400 dark:text-slate-500 border-2 border-dashed border-slate-300 dark:border-slate-600">
-                <div className="text-center">
-                  <div className="text-6xl mb-2">📅</div>
-                  <div className="text-lg font-medium">Calendar Heatmap</div>
-                  <div className="text-sm">Coming Soon</div>
-                </div>
-              </div>
-            </div>
+            <CalendarHeatmap timeFilter={timeFilter} />
           </div>
         </div>
       )}
