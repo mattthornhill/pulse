@@ -40,13 +40,19 @@ export function MetabaseModal({ isOpen, onClose, kpiId, kpiName }: MetabaseModal
         <DialogHeader className="pb-2">
           <DialogTitle className="text-xl font-bold">{kpiName}</DialogTitle>
         </DialogHeader>
-        <div className="flex-1 relative" style={{ height: 'calc(100% - 40px)' }}>
+        <div className="flex-1 relative overflow-hidden" style={{ height: 'calc(100% - 40px)' }}>
           <iframe
             src={embedUrl}
             frameBorder="0"
             allowTransparency
-            className="absolute inset-0 w-full h-full rounded-lg"
-            style={{ background: 'transparent' }}
+            className="absolute w-full rounded-lg"
+            style={{ 
+              background: 'transparent',
+              top: '-60px',
+              left: '0',
+              right: '0',
+              height: 'calc(100% + 60px)'
+            }}
           />
         </div>
       </DialogContent>
