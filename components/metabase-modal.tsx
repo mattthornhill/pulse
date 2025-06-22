@@ -48,10 +48,10 @@ export function MetabaseModal({ isOpen, onClose, kpiId, kpiName }: MetabaseModal
             className="absolute w-full"
             style={{ 
               background: 'transparent',
-              top: '-50px',
+              top: '-85px',
               left: '0',
               right: '0',
-              height: 'calc(100% + 100px)'
+              height: 'calc(100% + 135px)'
             }}
           />
         </div>
