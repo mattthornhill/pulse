@@ -209,7 +209,6 @@ export default function DashboardPage() {
               key={kpi.id} 
               data={kpi} 
               onClick={() => handleKPIClick(kpi.id)}
-              isLarge={kpi.id === 'total_revenue' || kpi.id === 'gross_profit_margin'}
             />
           ))}
         </div>
