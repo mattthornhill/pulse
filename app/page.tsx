@@ -4,13 +4,12 @@ import { useState, useEffect } from 'react'
 import { KPICard } from '@/components/kpi-card'
 import { DashboardSummary } from '@/components/dashboard-summary'
 import { TimeFilter } from '@/components/time-filter'
-import { Button } from '@/components/ui/button'
-import { FileText } from 'lucide-react'
 import { TimeFilter as TimeFilterType, KPIData, DashboardSummary as DashboardSummaryType } from '@/types/dashboard'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { MetabaseModal } from '@/components/metabase-modal'
 import { CalendarHeatmap } from '@/components/calendar-heatmap'
 import { cn } from '@/lib/utils'
+import { PDFExportButton } from '@/components/pdf/PDFDocument'
 
 // Mock data - in production, this would come from Supabase
 const mockKPIData: KPIData[] = [
@@ -147,14 +146,19 @@ export default function DashboardPage() {
     // In production, refetch data from Supabase
   }
   
-  const handleExportWeekly = () => {
-    // Implement PDF export
-    console.log('Exporting weekly agenda...')
+  const getWeeklyDateRange = () => {
+    const now = new Date()
+    const startOfWeek = new Date(now)
+    startOfWeek.setDate(now.getDate() - now.getDay())
+    const endOfWeek = new Date(startOfWeek)
+    endOfWeek.setDate(startOfWeek.getDate() + 6)
+    
+    return `${startOfWeek.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${endOfWeek.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
   }
   
-  const handleExportMonthly = () => {
-    // Implement PDF export
-    console.log('Exporting monthly agenda...')
+  const getMonthlyDateRange = () => {
+    const now = new Date()
+    return now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
   }
   
   const handleKPIClick = (kpiId: string) => {
@@ -231,20 +235,16 @@ export default function DashboardPage() {
             <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-gray-200 dark:border-slate-700 max-w-md w-full">
               <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 text-center">Leadership Meeting Tools</h3>
               <div className="grid grid-cols-2 gap-3">
-                <Button 
-                  onClick={handleExportWeekly}
-                  className="bg-gray-800 hover:bg-gray-900 text-white rounded-xl transition-all"
-                >
-                  <FileText className="w-4 h-4 mr-2" />
-                  Weekly Agenda
-                </Button>
-                <Button 
-                  onClick={handleExportMonthly}
-                  className="bg-gray-600 hover:bg-gray-700 text-white rounded-xl transition-all"
-                >
-                  <FileText className="w-4 h-4 mr-2" />
-                  Monthly Agenda
-                </Button>
+                <PDFExportButton 
+                  type="weekly"
+                  kpiData={kpiData}
+                  dateRange={getWeeklyDateRange()}
+                />
+                <PDFExportButton 
+                  type="monthly"
+                  kpiData={kpiData}
+                  dateRange={getMonthlyDateRange()}
+                />
               </div>
             </div>
           </div>
