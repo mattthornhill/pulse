@@ -129,15 +129,15 @@ export class TargetsService {
       
       // Get company settings for calculation preferences
       const settings = await this.getCompanySettings()
-      const rawPreferences = settings?.targetCalculationPreferences || {
+      const rawPreferences = settings?.targetCalculationPreferences as any || {
         monthly_to_weekly_factor: 4.33,
         monthly_to_daily_factor: 30
       }
       
       // Convert database snake_case keys to camelCase for the calculation functions
       const preferences = {
-        monthlyToWeeklyFactor: rawPreferences.monthly_to_weekly_factor || 4.33,
-        monthlyToDailyFactor: rawPreferences.monthly_to_daily_factor || 30
+        monthlyToWeeklyFactor: rawPreferences.monthly_to_weekly_factor || rawPreferences.monthlyToWeeklyFactor || 4.33,
+        monthlyToDailyFactor: rawPreferences.monthly_to_daily_factor || rawPreferences.monthlyToDailyFactor || 30
       }
       console.log(`⚙️ Using preferences:`, preferences)
       
@@ -181,15 +181,15 @@ export class TargetsService {
       
       // Get company settings
       const settings = await this.getCompanySettings()
-      const rawPreferences = settings?.targetCalculationPreferences || {
+      const rawPreferences = settings?.targetCalculationPreferences as any || {
         monthly_to_weekly_factor: 4.33,
         monthly_to_daily_factor: 30
       }
       
       // Convert database snake_case keys to camelCase for the calculation functions
       const preferences = {
-        monthlyToWeeklyFactor: rawPreferences.monthly_to_weekly_factor || 4.33,
-        monthlyToDailyFactor: rawPreferences.monthly_to_daily_factor || 30
+        monthlyToWeeklyFactor: rawPreferences.monthly_to_weekly_factor || rawPreferences.monthlyToWeeklyFactor || 4.33,
+        monthlyToDailyFactor: rawPreferences.monthly_to_daily_factor || rawPreferences.monthlyToDailyFactor || 30
       }
       
       return calculateYTDTargets(templates, assignments, year, currentMonth, preferences)
