@@ -57,3 +57,35 @@ export interface CalendarHeatmapData {
   greenCount: number
   redCount: number
 }
+
+export interface MonthlyTargetTemplate {
+  id: string
+  name: string
+  description?: string
+  kpiTargets: Record<KPIType, number>
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface MonthlyTargetAssignment {
+  id: string
+  templateId: string
+  month: number
+  year: number
+  assignedAt: Date
+  template?: MonthlyTargetTemplate
+}
+
+export interface TargetCalculationPreferences {
+  monthlyToWeeklyFactor: number
+  monthlyToDailyFactor: number
+}
+
+export interface CompanySettings {
+  id: string
+  companyName?: string
+  kpiTargets: Record<string, any>
+  targetCalculationPreferences: TargetCalculationPreferences
+  createdAt: Date
+  updatedAt: Date
+}

@@ -1,133 +1,232 @@
 import { StyleSheet } from '@react-pdf/renderer'
 
+// ServicePoint Pro Brand Colors
+const BRAND_COLORS = {
+  primary: '#1E3A8A',      // Deep blue from logo
+  secondary: '#3B82F6',    // Lighter blue
+  accent: '#059669',       // Green for positive indicators
+  danger: '#DC2626',       // Red for negative indicators
+  warning: '#D97706',      // Orange for warnings
+  neutral: '#6B7280',      // Gray
+  background: '#F8FAFC',   // Light blue-gray background
+  surface: '#FFFFFF',      // White surfaces
+  text: {
+    primary: '#1F2937',    // Dark gray
+    secondary: '#6B7280',  // Medium gray
+    light: '#9CA3AF'       // Light gray
+  }
+}
+
 export const styles = StyleSheet.create({
   page: {
     padding: 40,
     fontFamily: 'Helvetica',
-    backgroundColor: '#FFFFFF'
+    backgroundColor: BRAND_COLORS.surface,
+    color: BRAND_COLORS.text.primary
   },
   coverPage: {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
     height: '100%',
-    padding: 60
+    padding: 60,
+    backgroundColor: BRAND_COLORS.primary,
+    color: BRAND_COLORS.surface
+  },
+  coverHeader: {
+    textAlign: 'center',
+    marginBottom: 60
+  },
+  coverLogo: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: BRAND_COLORS.surface,
+    marginBottom: 20,
+    letterSpacing: 1
+  },
+  coverTagline: {
+    fontSize: 14,
+    color: BRAND_COLORS.surface,
+    opacity: 0.9,
+    fontStyle: 'italic'
   },
   title: {
-    fontSize: 32,
+    fontSize: 36,
     fontWeight: 'bold',
     marginBottom: 20,
-    color: '#111827',
-    textAlign: 'center'
+    color: BRAND_COLORS.surface,
+    textAlign: 'center',
+    lineHeight: 1.2
   },
   subtitle: {
-    fontSize: 18,
-    color: '#6B7280',
+    fontSize: 20,
+    color: BRAND_COLORS.surface,
     textAlign: 'center',
-    marginBottom: 10
+    marginBottom: 10,
+    opacity: 0.9
   },
   dateRange: {
-    fontSize: 16,
-    color: '#374151',
+    fontSize: 18,
+    color: BRAND_COLORS.surface,
     textAlign: 'center',
-    marginBottom: 40
+    marginBottom: 40,
+    opacity: 0.8
   },
   companyLogo: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#111827',
+    color: BRAND_COLORS.primary,
     textAlign: 'center',
     marginBottom: 60
   },
   quoteContainer: {
     padding: 30,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: 'rgba(255,255,255,0.1)',
     borderRadius: 8,
-    marginTop: 'auto'
+    marginTop: 'auto',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
+    borderStyle: 'solid'
   },
   quoteText: {
     fontSize: 16,
     fontStyle: 'italic',
-    color: '#374151',
+    color: BRAND_COLORS.surface,
     textAlign: 'center',
     marginBottom: 10,
-    lineHeight: 1.5
+    lineHeight: 1.5,
+    opacity: 0.9
   },
   quoteAuthor: {
     fontSize: 14,
-    color: '#6B7280',
-    textAlign: 'center'
+    color: BRAND_COLORS.surface,
+    textAlign: 'center',
+    opacity: 0.8
   },
   sectionTitle: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
-    color: '#111827'
+    color: BRAND_COLORS.primary,
+    borderBottomWidth: 2,
+    borderBottomColor: BRAND_COLORS.primary,
+    borderBottomStyle: 'solid',
+    paddingBottom: 10
+  },
+  sectionSubtitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    color: BRAND_COLORS.text.primary
   },
   table: {
     width: '100%',
     borderStyle: 'solid',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: BRAND_COLORS.neutral,
     borderRightWidth: 0,
     borderBottomWidth: 0,
-    marginBottom: 20
+    marginBottom: 20,
+    borderRadius: 8
   },
   tableRow: {
     margin: 'auto',
     flexDirection: 'row'
   },
   tableHeader: {
-    backgroundColor: '#F3F4F6'
+    backgroundColor: BRAND_COLORS.background
   },
   tableCol: {
     borderStyle: 'solid',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: BRAND_COLORS.neutral,
     borderLeftWidth: 0,
     borderTopWidth: 0,
-    padding: 8
+    padding: 12
   },
   tableCell: {
-    fontSize: 10,
-    color: '#374151'
+    fontSize: 11,
+    color: BRAND_COLORS.text.secondary,
+    lineHeight: 1.4
   },
   tableCellHeader: {
-    fontSize: 10,
+    fontSize: 12,
     fontWeight: 'bold',
-    color: '#111827'
+    color: BRAND_COLORS.primary
   },
   kpiValue: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: 'bold',
-    color: '#111827'
+    color: BRAND_COLORS.text.primary
+  },
+  kpiValueLarge: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: BRAND_COLORS.primary
   },
   greenIndicator: {
-    width: 8,
-    height: 8,
-    backgroundColor: '#10B981',
-    borderRadius: 4
+    width: 10,
+    height: 10,
+    backgroundColor: BRAND_COLORS.accent,
+    borderRadius: 5
   },
   redIndicator: {
-    width: 8,
-    height: 8,
-    backgroundColor: '#EF4444',
-    borderRadius: 4
+    width: 10,
+    height: 10,
+    backgroundColor: BRAND_COLORS.danger,
+    borderRadius: 5
+  },
+  yellowIndicator: {
+    width: 10,
+    height: 10,
+    backgroundColor: BRAND_COLORS.warning,
+    borderRadius: 5
   },
   winItem: {
     fontSize: 12,
-    color: '#059669',
-    marginBottom: 8,
-    paddingLeft: 20
+    color: BRAND_COLORS.accent,
+    marginBottom: 10,
+    paddingLeft: 20,
+    lineHeight: 1.4
   },
   opportunityItem: {
     fontSize: 12,
-    color: '#DC2626',
-    marginBottom: 8,
-    paddingLeft: 20
+    color: BRAND_COLORS.danger,
+    marginBottom: 10,
+    paddingLeft: 20,
+    lineHeight: 1.4
   },
   actionTable: {
     marginTop: 20
+  },
+  statCard: {
+    backgroundColor: BRAND_COLORS.background,
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: BRAND_COLORS.neutral,
+    borderStyle: 'solid'
+  },
+  statCardLarge: {
+    backgroundColor: BRAND_COLORS.primary,
+    borderRadius: 12,
+    padding: 24,
+    marginBottom: 16,
+    color: BRAND_COLORS.surface
+  },
+  gridContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between'
+  },
+  gridItem: {
+    width: '48%',
+    marginBottom: 12
+  },
+  gridItemFull: {
+    width: '100%',
+    marginBottom: 12
   },
   footer: {
     position: 'absolute',
@@ -135,15 +234,40 @@ export const styles = StyleSheet.create({
     left: 40,
     right: 40,
     fontSize: 10,
-    color: '#6B7280',
+    color: BRAND_COLORS.text.light,
     fontStyle: 'italic',
-    textAlign: 'center'
+    textAlign: 'center',
+    borderTopWidth: 1,
+    borderTopColor: BRAND_COLORS.neutral,
+    borderTopStyle: 'solid',
+    paddingTop: 10
   },
   pageNumber: {
     position: 'absolute',
     fontSize: 10,
     bottom: 20,
     right: 40,
-    color: '#9CA3AF'
+    color: BRAND_COLORS.text.light
+  },
+  brandFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingTop: 20,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.2)',
+    borderTopStyle: 'solid'
+  },
+  brandLogo: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: BRAND_COLORS.surface
+  },
+  brandContact: {
+    fontSize: 12,
+    color: BRAND_COLORS.surface,
+    opacity: 0.8
   }
 })
+
+export { BRAND_COLORS }

@@ -4,10 +4,12 @@ import { useState, useEffect } from 'react'
 import { KPICard } from '@/components/kpi-card'
 import { DashboardSummary } from '@/components/dashboard-summary'
 import { TimeFilter } from '@/components/time-filter'
-import { TimeFilter as TimeFilterType, KPIData, DashboardSummary as DashboardSummaryType } from '@/types/dashboard'
+import { TimeFilter as TimeFilterType, KPIData, DashboardSummary as DashboardSummaryType, KPIType } from '@/types/dashboard'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { MetabaseModal } from '@/components/metabase-modal'
 import { CalendarHeatmap } from '@/components/calendar-heatmap'
+import { DashboardSettings } from '@/components/dashboard-settings'
+import { useTargets } from '@/hooks/use-targets'
 import { cn } from '@/lib/utils'
 import { PDFExportButton } from '@/components/pdf/PDFDocument'
 
@@ -134,11 +136,45 @@ export default function DashboardPage() {
   const [modalOpen, setModalOpen] = useState(false)
   const [selectedKPI, setSelectedKPI] = useState<KPIData | null>(null)
   
+  // Load targets for current time filter
+  const { targets, loading: targetsLoading } = useTargets(timeFilter)
+  
+  // Merge targets with KPI data
+  const kpiDataWithTargets = kpiData.map(kpi => {
+    const kpiType = kpi.id as KPIType
+    const targetValue = targets?.[kpiType]
+    
+    if (targetValue && targetValue > 0) {
+      // Update the target in the KPI data
+      const updatedKpi = {
+        ...kpi,
+        target: {
+          type: 'fixed' as const,
+          value: targetValue
+        }
+      }
+      
+      // Recalculate status based on target achievement
+      const achievement = (kpi.value / targetValue) * 100
+      if (achievement >= 95) {
+        updatedKpi.status = 'green'
+      } else if (achievement >= 80) {
+        updatedKpi.status = 'grey'
+      } else {
+        updatedKpi.status = 'red'
+      }
+      
+      return updatedKpi
+    }
+    
+    return kpi
+  })
+  
   const summary: DashboardSummaryType = {
-    greenCount: kpiData.filter(kpi => kpi.status === 'green').length,
-    redCount: kpiData.filter(kpi => kpi.status === 'red').length,
-    totalScore: kpiData.filter(kpi => kpi.status === 'green').length,
-    percentage: Math.round((kpiData.filter(kpi => kpi.status === 'green').length / kpiData.length) * 100)
+    greenCount: kpiDataWithTargets.filter(kpi => kpi.status === 'green').length,
+    redCount: kpiDataWithTargets.filter(kpi => kpi.status === 'red').length,
+    totalScore: kpiDataWithTargets.filter(kpi => kpi.status === 'green').length,
+    percentage: Math.round((kpiDataWithTargets.filter(kpi => kpi.status === 'green').length / kpiDataWithTargets.length) * 100)
   }
   
   const handleRefresh = () => {
@@ -161,8 +197,13 @@ export default function DashboardPage() {
     return now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
   }
   
+  const getAnnualDateRange = () => {
+    const now = new Date()
+    return now.getFullYear().toString()
+  }
+  
   const handleKPIClick = (kpiId: string) => {
-    const kpi = kpiData.find(k => k.id === kpiId)
+    const kpi = kpiDataWithTargets.find(k => k.id === kpiId)
     if (kpi) {
       setSelectedKPI(kpi)
       setModalOpen(true)
@@ -181,17 +222,18 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-slate-950 dark:via-gray-900 dark:to-slate-950">
       {/* Header */}
-      <div className="bg-white dark:bg-gradient-to-r dark:from-slate-900 dark:to-slate-800 shadow-sm dark:shadow-lg border-b border-gray-200 dark:border-transparent relative z-50">
+      <div className="bg-white dark:bg-gradient-to-r dark:from-slate-900 dark:to-slate-800 shadow-sm dark:shadow-lg border-b border-gray-200 dark:border-transparent">
         <div className="px-4 md:px-[3%] py-3 md:py-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 md:gap-4">
             <div className="flex-1">
               <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">Profit Pulse AI</h1>
               <p className="text-gray-600 dark:text-slate-400 text-[10px] sm:text-xs md:text-sm mt-0.5 md:mt-1">Leadership Performance Intelligence</p>
             </div>
-            <div className="flex items-center gap-2 md:gap-4 relative z-50">
-              <div className="bg-gray-50 dark:bg-white/10 backdrop-blur-sm rounded-xl p-1 flex-1 sm:flex-initial min-w-[200px] sm:min-w-0">
+            <div className="flex items-center gap-2 md:gap-4">
+              <div className="rounded-xl flex-1 sm:flex-initial min-w-[200px] sm:min-w-0">
                 <TimeFilter value={timeFilter} onChange={setTimeFilter} />
               </div>
+              <DashboardSettings />
               <ThemeToggle />
             </div>
           </div>
@@ -210,7 +252,7 @@ export default function DashboardPage() {
       {/* KPI Scorecard Grid */}
       <div className="px-[3%] py-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {kpiData.map((kpi, index) => (
+          {kpiDataWithTargets.map((kpi, index) => (
             <div 
               key={kpi.id} 
               className={cn(
@@ -232,18 +274,23 @@ export default function DashboardPage() {
         <div className="px-[3%] pb-8">
           {/* Export Actions */}
           <div className="flex justify-center">
-            <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-gray-200 dark:border-slate-700 max-w-md w-full">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-gray-200 dark:border-slate-700 max-w-xl w-full">
               <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 text-center">Leadership Meeting Tools</h3>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-2 sm:gap-3">
                 <PDFExportButton 
                   type="weekly"
-                  kpiData={kpiData}
+                  kpiData={kpiDataWithTargets}
                   dateRange={getWeeklyDateRange()}
                 />
                 <PDFExportButton 
                   type="monthly"
-                  kpiData={kpiData}
+                  kpiData={kpiDataWithTargets}
                   dateRange={getMonthlyDateRange()}
+                />
+                <PDFExportButton 
+                  type="annual"
+                  kpiData={kpiDataWithTargets}
+                  dateRange={getAnnualDateRange()}
                 />
               </div>
             </div>

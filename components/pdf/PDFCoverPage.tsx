@@ -1,9 +1,9 @@
 import React from 'react'
 import { Page, Text, View } from '@react-pdf/renderer'
-import { styles } from './PDFStyles'
+import { styles, BRAND_COLORS } from './PDFStyles'
 
 interface PDFCoverPageProps {
-  type: 'weekly' | 'monthly'
+  type: 'weekly' | 'monthly' | 'annual'
   dateRange: string
 }
 
@@ -18,34 +18,77 @@ export const PDFCoverPage: React.FC<PDFCoverPageProps> = ({ type, dateRange }) =
   }
   
   return (
-    <Page size="A4" style={styles.page}>
+    <Page size="A4" style={styles.coverPage}>
       <View style={styles.coverPage}>
-        <View>
-          <Text style={styles.companyLogo}>Profit Pulse AI</Text>
+        {/* Header with ServicePoint Pro Branding */}
+        <View style={styles.coverHeader}>
+          <Text style={styles.coverLogo}>ServicePoint Pro</Text>
+          <Text style={styles.coverTagline}>AI-Powered, Industry-Crafted Field Service Management Software</Text>
         </View>
         
+        {/* Main Title Section */}
         <View>
           <Text style={styles.title}>
-            {type === 'weekly' ? 'Weekly' : 'Monthly'} Leadership Meeting Agenda
+            {type === 'weekly' ? 'Weekly' : type === 'monthly' ? 'Monthly' : 'Annual'} Leadership {type === 'annual' ? 'Report' : 'Meeting Agenda'}
           </Text>
           <Text style={styles.subtitle}>Performance Intelligence Report</Text>
           <Text style={styles.dateRange}>{dateRange}</Text>
         </View>
         
+        {/* Quote of the Month Section */}
         <View style={styles.quoteContainer}>
-          <Text style={[styles.sectionTitle, { textAlign: 'center', marginBottom: 15 }]}>Quote of the Month</Text>
-          <Text style={[styles.kpiValue, { fontSize: 28, textAlign: 'center', marginBottom: 10, color: '#059669' }]}>
+          <Text style={[styles.sectionSubtitle, { 
+            textAlign: 'center', 
+            marginBottom: 15, 
+            color: BRAND_COLORS.surface,
+            fontSize: 16
+          }]}>
+            Biggest Sales Estimate This {type === 'weekly' ? 'Week' : type === 'monthly' ? 'Month' : 'Year'}
+          </Text>
+          <Text style={[styles.kpiValueLarge, { 
+            fontSize: 32, 
+            textAlign: 'center', 
+            marginBottom: 12, 
+            color: BRAND_COLORS.surface 
+          }]}>
             ${biggestQuote.value.toLocaleString()}
           </Text>
-          <Text style={[styles.tableCell, { textAlign: 'center', fontSize: 14, marginBottom: 5 }]}>
+          <Text style={[styles.tableCell, { 
+            textAlign: 'center', 
+            fontSize: 14, 
+            marginBottom: 6,
+            color: BRAND_COLORS.surface,
+            fontWeight: 'bold'
+          }]}>
             {biggestQuote.customer}
           </Text>
-          <Text style={[styles.tableCell, { textAlign: 'center', fontSize: 12, marginBottom: 5 }]}>
+          <Text style={[styles.tableCell, { 
+            textAlign: 'center', 
+            fontSize: 12, 
+            marginBottom: 6,
+            color: BRAND_COLORS.surface,
+            opacity: 0.9
+          }]}>
             {biggestQuote.service}
           </Text>
-          <Text style={[styles.tableCell, { textAlign: 'center', fontSize: 12, color: '#6B7280' }]}>
+          <Text style={[styles.tableCell, { 
+            textAlign: 'center', 
+            fontSize: 11, 
+            color: BRAND_COLORS.surface,
+            opacity: 0.8
+          }]}>
             {biggestQuote.tech} • {biggestQuote.date}
           </Text>
+        </View>
+
+        {/* Brand Footer */}
+        <View style={styles.brandFooter}>
+          <View>
+            <Text style={styles.brandLogo}>ServicePoint Pro</Text>
+          </View>
+          <View>
+            <Text style={styles.brandContact}>For Performance-Driven Professionals</Text>
+          </View>
         </View>
       </View>
     </Page>

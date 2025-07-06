@@ -93,8 +93,29 @@ CREATE TABLE company_settings (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   company_name VARCHAR(255),
   kpi_targets JSONB DEFAULT '{}',
+  target_calculation_preferences JSONB DEFAULT '{"monthly_to_weekly_factor": 4.33, "monthly_to_daily_factor": 30}',
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Monthly target templates table
+CREATE TABLE monthly_target_templates (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  description TEXT,
+  kpi_targets JSONB NOT NULL DEFAULT '{}',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Monthly target assignments table
+CREATE TABLE monthly_target_assignments (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  template_id UUID REFERENCES monthly_target_templates(id) ON DELETE CASCADE,
+  month INTEGER NOT NULL CHECK (month >= 1 AND month <= 12),
+  year INTEGER NOT NULL CHECK (year >= 2020),
+  assigned_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(month, year)
 );
 
 -- Daily KPI snapshots for historical tracking
@@ -114,6 +135,8 @@ CREATE INDEX idx_service_visits_visit_date ON service_visits(visit_date);
 CREATE INDEX idx_calls_call_date ON calls(call_date);
 CREATE INDEX idx_costs_cost_date ON costs(cost_date);
 CREATE INDEX idx_kpi_snapshots_date ON kpi_snapshots(snapshot_date);
+CREATE INDEX idx_monthly_target_assignments_month_year ON monthly_target_assignments(month, year);
+CREATE INDEX idx_monthly_target_assignments_template_id ON monthly_target_assignments(template_id);
 
 -- Create views for common KPI calculations
 
@@ -197,4 +220,7 @@ CREATE TRIGGER update_costs_updated_at BEFORE UPDATE ON costs
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 CREATE TRIGGER update_company_settings_updated_at BEFORE UPDATE ON company_settings
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_monthly_target_templates_updated_at BEFORE UPDATE ON monthly_target_templates
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
