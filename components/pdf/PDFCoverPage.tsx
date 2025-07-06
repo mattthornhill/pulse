@@ -26,7 +26,6 @@ export const PDFCoverPage: React.FC<PDFCoverPageProps> = ({ type, dateRange }) =
             <Image 
               src="/images/servicepoint-logo.png" 
               style={styles.logoImage}
-              alt="ServicePoint Pro Logo"
             />
           </View>
           <Text style={styles.coverTagline}>AI-Powered, Industry-Crafted Field Service Management Software</Text>
@@ -92,7 +91,6 @@ export const PDFCoverPage: React.FC<PDFCoverPageProps> = ({ type, dateRange }) =
           <Image 
             src="/images/servicepoint-logo.png" 
             style={styles.logoImageSmall}
-            alt="ServicePoint Pro Logo"
           />
           <View>
             <Text style={styles.brandContact}>For Performance-Driven Professionals</Text>
