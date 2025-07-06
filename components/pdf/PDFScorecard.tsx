@@ -5,10 +5,9 @@ import { KPIData } from '@/types/dashboard'
 
 interface PDFScorecardProps {
   kpiData: KPIData[]
-  historicalData?: Record<string, number[]> // KPI ID to array of historical values
 }
 
-export const PDFScorecard: React.FC<PDFScorecardProps> = ({ kpiData, historicalData }) => {
+export const PDFScorecard: React.FC<PDFScorecardProps> = ({ kpiData }) => {
   const summary = {
     greenCount: kpiData.filter(kpi => kpi.status === 'green').length,
     redCount: kpiData.filter(kpi => kpi.status === 'red').length,
@@ -19,115 +18,76 @@ export const PDFScorecard: React.FC<PDFScorecardProps> = ({ kpiData, historicalD
     <Page size="A4" style={styles.page}>
       <Text style={styles.sectionTitle}>The Perfect 10 Scorecard</Text>
       
-      {/* Executive Summary Cards */}
-      <View style={styles.gridContainer}>
-        <View style={[styles.statCardLarge, styles.gridItemFull]}>
-          <Text style={[styles.kpiValueLarge, { color: BRAND_COLORS.surface, textAlign: 'center', marginBottom: 8 }]}>
-            {summary.percentage}%
-          </Text>
-          <Text style={[styles.sectionSubtitle, { color: BRAND_COLORS.surface, textAlign: 'center', fontSize: 16 }]}>
-            Overall Performance Score
-          </Text>
-          <Text style={[styles.tableCell, { color: BRAND_COLORS.surface, textAlign: 'center', opacity: 0.9 }]}>
-            {summary.greenCount} of {kpiData.length} KPIs on target
-          </Text>
-        </View>
-        
-        <View style={[styles.statCard, styles.gridItem]}>
-          <Text style={[styles.kpiValue, { color: BRAND_COLORS.accent, textAlign: 'center', marginBottom: 4 }]}>
-            {summary.greenCount}
-          </Text>
-          <Text style={[styles.tableCell, { textAlign: 'center', fontWeight: 'bold' }]}>
-            On Target
-          </Text>
-        </View>
-        
-        <View style={[styles.statCard, styles.gridItem]}>
-          <Text style={[styles.kpiValue, { color: BRAND_COLORS.danger, textAlign: 'center', marginBottom: 4 }]}>
-            {summary.redCount}
-          </Text>
-          <Text style={[styles.tableCell, { textAlign: 'center', fontWeight: 'bold' }]}>
-            Below Target
-          </Text>
-        </View>
+      {/* Compact Summary */}
+      <View style={[styles.statCardLarge, { marginBottom: 20 }]}>
+        <Text style={[styles.kpiValueLarge, { color: BRAND_COLORS.surface, textAlign: 'center', fontSize: 24 }]}>
+          {summary.percentage}% Overall Performance Score
+        </Text>
+        <Text style={[styles.tableCell, { color: BRAND_COLORS.surface, textAlign: 'center', fontSize: 10 }]}>
+          {summary.greenCount} of {kpiData.length} KPIs on target
+        </Text>
       </View>
       
-      <View style={styles.table}>
-        {/* Header Row */}
-        <View style={[styles.tableRow, styles.tableHeader]}>
-          <View style={[styles.tableCol, { width: '25%' }]}>
-            <Text style={styles.tableCellHeader}>KPI</Text>
-          </View>
-          <View style={[styles.tableCol, { width: '15%' }]}>
-            <Text style={styles.tableCellHeader}>Current</Text>
-          </View>
-          <View style={[styles.tableCol, { width: '15%' }]}>
-            <Text style={styles.tableCellHeader}>Previous</Text>
-          </View>
-          <View style={[styles.tableCol, { width: '15%' }]}>
-            <Text style={styles.tableCellHeader}>Target</Text>
-          </View>
-          <View style={[styles.tableCol, { width: '15%' }]}>
-            <Text style={styles.tableCellHeader}>Change</Text>
-          </View>
-          <View style={[styles.tableCol, { width: '15%' }]}>
-            <Text style={styles.tableCellHeader}>Status</Text>
-          </View>
-        </View>
-        
-        {/* Data Rows */}
+      {/* Simple 2-column grid of ALL KPI cards */}
+      <View style={{
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between'
+      }}>
         {kpiData.map((kpi) => (
-          <View style={styles.tableRow} key={kpi.id}>
-            <View style={[styles.tableCol, { width: '25%' }]}>
-              <Text style={styles.tableCell}>{kpi.name}</Text>
-            </View>
-            <View style={[styles.tableCol, { width: '15%' }]}>
-              <Text style={styles.kpiValue}>
-                {kpi.unit === '$' && '$'}
-                {kpi.value.toLocaleString()}
-                {kpi.unit === '%' && '%'}
+          <View key={kpi.id} style={{
+            width: '48%',
+            backgroundColor: BRAND_COLORS.background,
+            borderRadius: 4,
+            padding: 8,
+            marginBottom: 6,
+            borderWidth: 1,
+            borderColor: BRAND_COLORS.neutral,
+            borderStyle: 'solid'
+          }}>
+            <View style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: 4
+            }}>
+              <Text style={{ fontSize: 10, fontWeight: 'bold', color: BRAND_COLORS.text.primary }}>
+                {kpi.name}
               </Text>
+              <View style={{
+                width: 8,
+                height: 8,
+                backgroundColor: kpi.status === 'green' ? BRAND_COLORS.accent : 
+                               kpi.status === 'red' ? BRAND_COLORS.danger : 
+                               BRAND_COLORS.warning,
+                borderRadius: 4
+              }} />
             </View>
-            <View style={[styles.tableCol, { width: '15%' }]}>
-              <Text style={styles.tableCell}>
-                {kpi.unit === '$' && '$'}
-                {kpi.previousValue?.toLocaleString() || '-'}
-                {kpi.unit === '%' && '%'}
+            
+            <Text style={{ fontSize: 14, fontWeight: 'bold', color: BRAND_COLORS.text.primary }}>
+              {kpi.unit === '$' && '$'}
+              {kpi.value.toLocaleString()}
+              {kpi.unit === '%' && '%'}
+            </Text>
+            
+            {kpi.change !== undefined && (
+              <Text style={{
+                fontSize: 8,
+                color: kpi.changeType === 'increase' ? BRAND_COLORS.accent : BRAND_COLORS.danger
+              }}>
+                {kpi.changeType === 'increase' ? '↑' : '↓'} {Math.abs(kpi.change)}%
               </Text>
-            </View>
-            <View style={[styles.tableCol, { width: '15%' }]}>
-              <Text style={styles.tableCell}>
-                {kpi.target && (
-                  <>
-                    {kpi.unit === '$' && '$'}
-                    {kpi.target.value.toLocaleString()}
-                    {kpi.unit === '%' && '%'}
-                  </>
-                )}
+            )}
+            
+            {kpi.target && (
+              <Text style={{ fontSize: 7, color: BRAND_COLORS.text.secondary }}>
+                Target: {kpi.unit === '$' && '$'}{kpi.target.value.toLocaleString()}{kpi.unit === '%' && '%'}
               </Text>
-            </View>
-            <View style={[styles.tableCol, { width: '15%' }]}>
-              <Text style={styles.tableCell}>
-                {kpi.change !== undefined && (
-                  <>
-                    {kpi.changeType === 'increase' ? '+' : ''}
-                    {kpi.change}%
-                  </>
-                )}
-              </Text>
-            </View>
-            <View style={[styles.tableCol, { width: '15%', flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }]}>
-              <View style={
-                kpi.status === 'green' ? styles.greenIndicator : 
-                kpi.status === 'red' ? styles.redIndicator : 
-                styles.yellowIndicator
-              } />
-            </View>
+            )}
           </View>
         ))}
       </View>
       
-      {/* Footer */}
       <Text style={styles.footer}>
         Generated by ServicePoint Pro • Profit Pulse AI Dashboard • {new Date().toLocaleDateString()}
       </Text>

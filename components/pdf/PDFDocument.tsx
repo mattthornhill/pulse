@@ -7,6 +7,8 @@ import { PDFScorecard } from './PDFScorecard'
 import { PDFWinsAndOpportunities } from './PDFWinsAndOpportunities'
 import { PDFActionItems } from './PDFActionItems'
 import { PDFTrends } from './PDFTrends'
+import { PDFAccountabilityCoach } from './PDFAccountabilityCoach'
+import { PDFCheckInQuestions } from './PDFCheckInQuestions'
 import { KPIData } from '@/types/dashboard'
 import { Button } from '@/components/ui/button'
 import { FileText, Download } from 'lucide-react'
@@ -23,7 +25,8 @@ const LeadershipAgendaPDF: React.FC<PDFDocumentProps> = ({ type, kpiData, dateRa
     <PDFScorecard kpiData={kpiData} />
     <PDFWinsAndOpportunities kpiData={kpiData} />
     <PDFActionItems />
-    {(type === 'monthly' || type === 'annual') && <PDFTrends kpiData={kpiData} />}
+    <PDFAccountabilityCoach kpiData={kpiData} type={type} />
+    <PDFCheckInQuestions type={type} />
   </Document>
 )
 

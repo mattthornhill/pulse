@@ -81,6 +81,7 @@ export function CalendarHeatmap({ timeFilter }: CalendarHeatmapProps) {
   const [selectedKPI, setSelectedKPI] = useState<KPIType | 'all'>('all')
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear())
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null)
+  const [selectedYear, setSelectedYear] = useState<number | null>(null)
   
   const getColorForPercentage = (percentage: number): string => {
     if (percentage === 100) return 'bg-green-600 dark:bg-green-500'
@@ -180,6 +181,13 @@ export function CalendarHeatmap({ timeFilter }: CalendarHeatmapProps) {
   const handleMonthClick = (monthIndex: number) => {
     setSelectedMonth(monthIndex)
     setSelectedDate(null)
+    setSelectedYear(null)
+  }
+  
+  const handleYearClick = (year: number) => {
+    setSelectedYear(year)
+    setSelectedDate(null)
+    setSelectedMonth(null)
   }
   
   const getMonthData = (monthIndex: number) => {
@@ -282,9 +290,12 @@ export function CalendarHeatmap({ timeFilter }: CalendarHeatmapProps) {
           >
             <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600 dark:text-gray-400" />
           </button>
-          <span className="text-base sm:text-lg font-medium text-gray-700 dark:text-gray-300 min-w-[120px] sm:min-w-[140px] text-center">
+          <button
+            onClick={() => handleMonthClick(currentDate.getMonth())}
+            className="text-base sm:text-lg font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 min-w-[120px] sm:min-w-[140px] text-center transition-colors underline-offset-2 hover:underline"
+          >
             {monthYear}
-          </span>
+          </button>
           <button
             onClick={() => navigateMonth('next')}
             className="p-1.5 sm:p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
@@ -402,9 +413,12 @@ export function CalendarHeatmap({ timeFilter }: CalendarHeatmapProps) {
           >
             <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600 dark:text-gray-400" />
           </button>
-          <span className="text-base sm:text-lg font-medium text-gray-700 dark:text-gray-300 min-w-[80px] text-center">
+          <button
+            onClick={() => handleYearClick(currentYear)}
+            className="text-base sm:text-lg font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 min-w-[80px] text-center transition-colors underline-offset-2 hover:underline"
+          >
             {currentYear}
-          </span>
+          </button>
           <button
             onClick={() => navigateYear('next')}
             className="p-1.5 sm:p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
@@ -603,6 +617,16 @@ export function CalendarHeatmap({ timeFilter }: CalendarHeatmapProps) {
           selectedKPI={selectedKPI}
         />
       )}
+      
+      {/* Annual Overview Modal */}
+      {selectedYear !== null && (
+        <AnnualOverviewModal
+          isOpen={selectedYear !== null}
+          onClose={() => setSelectedYear(null)}
+          year={selectedYear}
+          selectedKPI={selectedKPI}
+        />
+      )}
     </>
   )
 }
@@ -764,6 +788,221 @@ function MonthOverviewModal({
               })}
             </div>
           </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+// Annual Overview Modal Component
+interface AnnualOverviewModalProps {
+  isOpen: boolean
+  onClose: () => void
+  year: number
+  selectedKPI: KPIType | 'all'
+}
+
+function AnnualOverviewModal({ 
+  isOpen, 
+  onClose, 
+  year,
+  selectedKPI 
+}: AnnualOverviewModalProps) {
+  const getColorForPercentage = (percentage: number): string => {
+    if (percentage === 100) return 'bg-green-600 dark:bg-green-500'
+    if (percentage >= 70) return 'bg-green-400 dark:bg-green-400'
+    if (percentage >= 60) return 'bg-red-400 dark:bg-red-400'
+    return 'bg-red-600 dark:bg-red-500'
+  }
+  
+  const getColorForKPI = (isGreen: boolean): string => {
+    return isGreen ? 'bg-green-500 dark:bg-green-400' : 'bg-red-500 dark:bg-red-400'
+  }
+  
+  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+  
+  // Calculate annual statistics by month
+  const annualData = monthNames.map((monthName, monthIndex) => {
+    const daysInMonth = new Date(year, monthIndex + 1, 0).getDate()
+    let monthTotal = 0
+    let monthCount = 0
+    let monthGreen = 0
+    let monthRed = 0
+    
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dateKey = `${year}-${String(monthIndex + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+      const dayData = mockPerformanceData[dateKey]
+      
+      if (dayData) {
+        if (selectedKPI === 'all') {
+          monthTotal += dayData.percentage
+          monthCount++
+        } else {
+          if (dayData.kpiStatus[selectedKPI]) {
+            monthGreen++
+          } else {
+            monthRed++
+          }
+          monthCount++
+        }
+      }
+    }
+    
+    const monthAverage = monthCount > 0 ? Math.round(monthTotal / monthCount) : 0
+    
+    return {
+      name: monthName,
+      average: monthAverage,
+      count: monthCount,
+      green: monthGreen,
+      red: monthRed
+    }
+  })
+  
+  // Calculate overall annual stats
+  const overallStats = annualData.reduce((acc, month) => {
+    if (selectedKPI === 'all') {
+      acc.total += month.average * month.count
+      acc.count += month.count
+    } else {
+      acc.green += month.green
+      acc.red += month.red
+      acc.count += month.count
+    }
+    return acc
+  }, { total: 0, count: 0, green: 0, red: 0 })
+  
+  const overallAverage = selectedKPI === 'all' && overallStats.count > 0 
+    ? Math.round(overallStats.total / overallStats.count) 
+    : 0
+  
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="text-2xl">
+            {year} Annual Performance Overview
+          </DialogTitle>
+        </DialogHeader>
+        
+        <div className="space-y-6">
+          {/* Annual Summary */}
+          <div className="bg-gray-50 dark:bg-slate-800 rounded-lg p-6">
+            <h3 className="font-semibold mb-4 text-lg">Annual Summary</h3>
+            {selectedKPI === 'all' ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="text-center">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Overall Average</p>
+                  <p className="text-3xl font-bold text-blue-600">{overallAverage}%</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Total Days Tracked</p>
+                  <p className="text-3xl font-bold">{overallStats.count}</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Best Month</p>
+                  <p className="text-xl font-bold text-green-600">
+                    {annualData.reduce((best, month) => 
+                      month.average > best.average ? month : best, 
+                      { name: '', average: 0 }
+                    ).name}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="text-center">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Target Met</p>
+                  <p className="text-3xl font-bold text-green-600">{overallStats.green} days</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Target Missed</p>
+                  <p className="text-3xl font-bold text-red-600">{overallStats.red} days</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Success Rate</p>
+                  <p className="text-3xl font-bold text-blue-600">
+                    {overallStats.count > 0 ? Math.round((overallStats.green / overallStats.count) * 100) : 0}%
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+          
+          {/* Monthly Performance Grid */}
+          <div>
+            <h3 className="font-semibold mb-4 text-lg">Monthly Performance</h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {annualData.map((month, index) => {
+                const colorClass = selectedKPI === 'all' 
+                  ? getColorForPercentage(month.average)
+                  : getColorForKPI(month.green > month.red)
+                
+                return (
+                  <div
+                    key={index}
+                    className={cn(
+                      "rounded-lg p-4 text-white text-center transition-transform hover:scale-105",
+                      colorClass
+                    )}
+                  >
+                    <h4 className="font-semibold text-lg mb-2">{month.name}</h4>
+                    {selectedKPI === 'all' ? (
+                      <>
+                        <p className="text-2xl font-bold">{month.average}%</p>
+                        <p className="text-xs opacity-90">{month.count} days tracked</p>
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-lg font-bold">{month.green}/{month.count}</p>
+                        <p className="text-xs opacity-90">targets met</p>
+                      </>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+          
+          {/* KPI Performance Summary */}
+          {selectedKPI === 'all' && (
+            <div>
+              <h3 className="font-semibold mb-4 text-lg">KPI Performance Summary</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {ALL_KPIS.map((kpiType) => {
+                  // Calculate success rate for this KPI across the year
+                  const kpiStats = Object.keys(mockPerformanceData).reduce((acc, dateKey) => {
+                    if (dateKey.startsWith(`${year}-`)) {
+                      const data = mockPerformanceData[dateKey]
+                      if (data.kpiStatus[kpiType]) {
+                        acc.success++
+                      }
+                      acc.total++
+                    }
+                    return acc
+                  }, { success: 0, total: 0 })
+                  
+                  const successRate = kpiStats.total > 0 ? Math.round((kpiStats.success / kpiStats.total) * 100) : 0
+                  
+                  return (
+                    <div key={kpiType} className="bg-gray-50 dark:bg-slate-800 rounded-lg p-4">
+                      <h4 className="font-medium text-sm mb-2">{KPI_NAMES[kpiType]}</h4>
+                      <div className="flex items-center gap-3">
+                        <div className={cn(
+                          "w-3 h-3 rounded-full",
+                          successRate >= 70 ? 'bg-green-500' : successRate >= 60 ? 'bg-yellow-500' : 'bg-red-500'
+                        )} />
+                        <span className="font-semibold">{successRate}%</span>
+                        <span className="text-xs text-gray-600 dark:text-gray-400">
+                          ({kpiStats.success}/{kpiStats.total} days)
+                        </span>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>

@@ -117,32 +117,48 @@ export class TargetsService {
       const month = date.getMonth() + 1
       const year = date.getFullYear()
       
+      console.log(`🎯 Getting targets for ${timeFilter} - Month: ${month}, Year: ${year}`)
+      
       // Get assignments for current year
       const assignments = await this.getTargetAssignments(year)
+      console.log(`📋 Found ${assignments.length} assignments for ${year}`)
       
       // Get templates
       const templates = await this.getTargetTemplates()
+      console.log(`📊 Found ${templates.length} templates`)
       
       // Get company settings for calculation preferences
       const settings = await this.getCompanySettings()
-      const preferences = settings?.targetCalculationPreferences || {
-        monthlyToWeeklyFactor: 4.33,
-        monthlyToDailyFactor: 30
+      const rawPreferences = settings?.targetCalculationPreferences || {
+        monthly_to_weekly_factor: 4.33,
+        monthly_to_daily_factor: 30
       }
+      
+      // Convert database snake_case keys to camelCase for the calculation functions
+      const preferences = {
+        monthlyToWeeklyFactor: rawPreferences.monthly_to_weekly_factor || 4.33,
+        monthlyToDailyFactor: rawPreferences.monthly_to_daily_factor || 30
+      }
+      console.log(`⚙️ Using preferences:`, preferences)
       
       // Find template for current month
       const template = getTemplateForMonth(templates, assignments, month, year)
       
       if (!template) {
+        console.warn(`❌ No template found for month ${month}, year ${year}`)
         return null
       }
+      
+      console.log(`✅ Found template: ${template.name}`, template.kpiTargets)
       
       // Calculate targets for the specified time period
       const targets: Record<KPIType, number> = {} as Record<KPIType, number>
       
       Object.entries(template.kpiTargets).forEach(([kpiType, monthlyTarget]) => {
         const kpi = kpiType as KPIType
-        targets[kpi] = getTargetForPeriod(monthlyTarget, timeFilter, preferences)
+        const calculatedTarget = getTargetForPeriod(monthlyTarget, timeFilter, preferences)
+        targets[kpi] = calculatedTarget
+        console.log(`📈 ${kpi}: ${monthlyTarget} (monthly) → ${calculatedTarget} (${timeFilter})`)
       })
       
       return targets
@@ -165,9 +181,15 @@ export class TargetsService {
       
       // Get company settings
       const settings = await this.getCompanySettings()
-      const preferences = settings?.targetCalculationPreferences || {
-        monthlyToWeeklyFactor: 4.33,
-        monthlyToDailyFactor: 30
+      const rawPreferences = settings?.targetCalculationPreferences || {
+        monthly_to_weekly_factor: 4.33,
+        monthly_to_daily_factor: 30
+      }
+      
+      // Convert database snake_case keys to camelCase for the calculation functions
+      const preferences = {
+        monthlyToWeeklyFactor: rawPreferences.monthly_to_weekly_factor || 4.33,
+        monthlyToDailyFactor: rawPreferences.monthly_to_daily_factor || 30
       }
       
       return calculateYTDTargets(templates, assignments, year, currentMonth, preferences)

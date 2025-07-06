@@ -1,5 +1,5 @@
 import React from 'react'
-import { Page, Text, View } from '@react-pdf/renderer'
+import { Page, Text, View, Image, Svg, Path } from '@react-pdf/renderer'
 import { styles, BRAND_COLORS } from './PDFStyles'
 
 interface PDFCoverPageProps {
@@ -22,7 +22,12 @@ export const PDFCoverPage: React.FC<PDFCoverPageProps> = ({ type, dateRange }) =
       <View style={styles.coverPage}>
         {/* Header with ServicePoint Pro Branding */}
         <View style={styles.coverHeader}>
-          <Text style={styles.coverLogo}>ServicePoint Pro</Text>
+          <View style={styles.logoContainer}>
+            <Image 
+              src="/images/servicepoint-logo.png" 
+              style={styles.logoImage}
+            />
+          </View>
           <Text style={styles.coverTagline}>AI-Powered, Industry-Crafted Field Service Management Software</Text>
         </View>
         
@@ -83,9 +88,10 @@ export const PDFCoverPage: React.FC<PDFCoverPageProps> = ({ type, dateRange }) =
 
         {/* Brand Footer */}
         <View style={styles.brandFooter}>
-          <View>
-            <Text style={styles.brandLogo}>ServicePoint Pro</Text>
-          </View>
+          <Image 
+            src="/images/servicepoint-logo.png" 
+            style={styles.logoImageSmall}
+          />
           <View>
             <Text style={styles.brandContact}>For Performance-Driven Professionals</Text>
           </View>

@@ -22,7 +22,9 @@ export const styles = StyleSheet.create({
     padding: 40,
     fontFamily: 'Helvetica',
     backgroundColor: BRAND_COLORS.surface,
-    color: BRAND_COLORS.text.primary
+    color: BRAND_COLORS.text.primary,
+    breakBefore: 'avoid',
+    breakAfter: 'avoid'
   },
   coverPage: {
     display: 'flex',
@@ -127,7 +129,8 @@ export const styles = StyleSheet.create({
     borderRightWidth: 0,
     borderBottomWidth: 0,
     marginBottom: 20,
-    borderRadius: 8
+    borderRadius: 8,
+    breakInside: 'avoid'
   },
   tableRow: {
     margin: 'auto',
@@ -145,9 +148,9 @@ export const styles = StyleSheet.create({
     padding: 12
   },
   tableCell: {
-    fontSize: 11,
+    fontSize: 10,
     color: BRAND_COLORS.text.secondary,
-    lineHeight: 1.4
+    lineHeight: 1.3
   },
   tableCellHeader: {
     fontSize: 12,
@@ -155,9 +158,10 @@ export const styles = StyleSheet.create({
     color: BRAND_COLORS.primary
   },
   kpiValue: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
-    color: BRAND_COLORS.text.primary
+    color: BRAND_COLORS.text.primary,
+    lineHeight: 1.2
   },
   kpiValueLarge: {
     fontSize: 24,
@@ -210,19 +214,26 @@ export const styles = StyleSheet.create({
   },
   statCardLarge: {
     backgroundColor: BRAND_COLORS.primary,
-    borderRadius: 12,
-    padding: 24,
-    marginBottom: 16,
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 12,
     color: BRAND_COLORS.surface
   },
   gridContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    breakInside: 'avoid'
   },
   gridItem: {
     width: '48%',
-    marginBottom: 12
+    marginBottom: 8,
+    breakInside: 'avoid'
+  },
+  gridItemThird: {
+    width: '31%',
+    marginBottom: 8,
+    breakInside: 'avoid'
   },
   gridItemFull: {
     width: '100%',
@@ -267,6 +278,120 @@ export const styles = StyleSheet.create({
     fontSize: 12,
     color: BRAND_COLORS.surface,
     opacity: 0.8
+  },
+  kpiCard: {
+    backgroundColor: BRAND_COLORS.background,
+    borderRadius: 6,
+    padding: 10,
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: BRAND_COLORS.neutral,
+    borderStyle: 'solid',
+    breakInside: 'avoid'
+  },
+  kpiCardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8
+  },
+  kpiCardTitle: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: BRAND_COLORS.text.primary,
+    maxWidth: '60%'
+  },
+  kpiCardValue: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: BRAND_COLORS.text.primary,
+    marginBottom: 3
+  },
+  kpiCardTrend: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 8
+  },
+  sparklineContainer: {
+    marginLeft: 'auto'
+  },
+  gaugeContainer: {
+    width: 80,
+    height: 40,
+    marginTop: 8
+  },
+  compactTable: {
+    fontSize: 9,
+    width: '100%'
+  },
+  compactTableHeader: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: BRAND_COLORS.primary,
+    padding: 8
+  },
+  compactTableCell: {
+    fontSize: 9,
+    padding: 8,
+    color: BRAND_COLORS.text.secondary
+  },
+  compactKpiValue: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: BRAND_COLORS.text.primary
+  },
+  trendArrow: {
+    fontSize: 14,
+    marginRight: 4
+  },
+  trendUp: {
+    color: BRAND_COLORS.accent
+  },
+  trendDown: {
+    color: BRAND_COLORS.danger
+  },
+  pageBreak: {
+    breakBefore: 'always'
+  },
+  noBreak: {
+    breakInside: 'avoid'
+  },
+  accountabilitySection: {
+    backgroundColor: '#FEF3C7',
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#FCD34D',
+    borderStyle: 'solid'
+  },
+  accountabilityTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#92400E',
+    marginBottom: 10
+  },
+  accountabilityItem: {
+    fontSize: 11,
+    color: '#78350F',
+    marginBottom: 8,
+    paddingLeft: 20
+  },
+  logoContainer: {
+    width: 300,
+    height: 80,
+    marginBottom: 30,
+    alignSelf: 'center'
+  },
+  logoImage: {
+    width: 300,
+    height: 80,
+    objectFit: 'contain'
+  },
+  logoImageSmall: {
+    width: 180,
+    height: 50,
+    objectFit: 'contain'
   }
 })
 

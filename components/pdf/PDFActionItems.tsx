@@ -3,7 +3,7 @@ import { Page, Text, View } from '@react-pdf/renderer'
 import { styles } from './PDFStyles'
 
 export const PDFActionItems: React.FC = () => {
-  const emptyRows = Array(5).fill(null)
+  const emptyRows = Array(8).fill(null) // Reasonable number of rows
   
   return (
     <Page size="A4" style={styles.page}>
@@ -29,16 +29,16 @@ export const PDFActionItems: React.FC = () => {
         {/* Empty Rows for manual entry */}
         {emptyRows.map((_, index) => (
           <View style={styles.tableRow} key={index}>
-            <View style={[styles.tableCol, { width: '30%', height: 40 }]}>
+            <View style={[styles.tableCol, { width: '30%' }]}>
               <Text style={styles.tableCell}> </Text>
             </View>
-            <View style={[styles.tableCol, { width: '35%', height: 40 }]}>
+            <View style={[styles.tableCol, { width: '35%' }]}>
               <Text style={styles.tableCell}> </Text>
             </View>
-            <View style={[styles.tableCol, { width: '20%', height: 40 }]}>
+            <View style={[styles.tableCol, { width: '20%' }]}>
               <Text style={styles.tableCell}> </Text>
             </View>
-            <View style={[styles.tableCol, { width: '15%', height: 40 }]}>
+            <View style={[styles.tableCol, { width: '15%' }]}>
               <Text style={styles.tableCell}> </Text>
             </View>
           </View>
