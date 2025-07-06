@@ -37,18 +37,22 @@ export const ServicePointLogo: React.FC<ServicePointLogoProps> = ({
           <Text
             x="0"
             y="14"
-            fill={color}
-            fontSize="14"
-            fontFamily="Helvetica-Bold"
+            style={{
+              fill: color,
+              fontSize: 14,
+              fontFamily: 'Helvetica-Bold'
+            }}
           >
             ServicePoint
           </Text>
           <Text
             x="85"
             y="14"
-            fill={color}
-            fontSize="12"
-            fontFamily="Helvetica"
+            style={{
+              fill: color,
+              fontSize: 12,
+              fontFamily: 'Helvetica'
+            }}
           >
             Pro
           </Text>
